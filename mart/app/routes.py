@@ -2,7 +2,8 @@ from flask import render_template, flash, redirect, url_for, request
 from flask_login import login_required
 from werkzeug.urls import url_parse
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm
+from app.forms import *
+from app.models import Post 
 
 # For user authentication/login/logout
 from flask_login import current_user, login_user, logout_user
@@ -14,6 +15,13 @@ from datetime import datetime
 # Require user to login
 @login_required
 def index():
+    form = PostForm()
+    if form.validate_on_submit():
+        post = Post(body=form.post.data, author=current_user)
+        db.session.add(post)
+        db.session.commit()
+        flash("Listing is not live.")
+        return redirect(url_for("index"))
     posts = [
         {
             'author': {'username': 'John'},
@@ -24,7 +32,10 @@ def index():
             'body': 'The Avengers movie was so cool!'
         }
     ]
-    return render_template("index.html", posts=posts)
+
+    posts = current_user.followed_posts().all()
+
+    return render_template("index.html", title="Home Page", form=form, posts=posts)
 
 # the methods arguments indicates that this view function accepts
 # GET and POST requests, overriding the default of accepting only
@@ -106,7 +117,7 @@ def before_request():
 @app.route("/edit_profile", methods=["POST", "GET"])        
 @login_required
 def edit_profile():
-    form = EditProfileForm()
+    form = EditProfileForm(current_user.username)
     if form.validate_on_submit():
         current_user.username = form.username.data
         current_user.about_me = form.about_me.data
@@ -120,7 +131,11 @@ def edit_profile():
     return render_template("edit_profile.html", title="Edit Profile", form=form)
 
 
-
+@app.route("/explore")
+@login_required
+def explore():
+    posts = Post.query.order_by(Post.timestamp.desc()).all()
+    return render_template("index.html", title="Explore", post=posts)
 
 
 

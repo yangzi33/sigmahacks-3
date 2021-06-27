@@ -1,14 +1,14 @@
 <html>
     <head>
       {% if title %}
-      <title>{{ title }} - SigmaMart</title>
+      <title>{{ title }} - SigMart</title>
       {% else %}
-      <title>Welcome to SigmaMart</title>
+      <title>Welcome to SigMart</title>
       {% endif %}
     </head>
     <body>
         <div>
-            SigmaMart:
+            SigMart:
             <a href="{{ url_for('index') }}">Home</a>
             {% if current_user.is_anonymous %}
             <a href="{{ url_for('login') }}">Login</a>
