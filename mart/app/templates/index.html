@@ -16,6 +16,7 @@
         </form>
         {% endif %}
     {% for post in posts %}
-    <div><p> {{ post.author.username }} posted item: <b> {{ post.body }} </b></p></div>
+            {% include '_post.html' %}
+    <!-- <div><p> {{ post.author.username }} posted item: <b> {{ post.body }} </b></p></div> -->
     {% endfor %}
 {% endblock %}
